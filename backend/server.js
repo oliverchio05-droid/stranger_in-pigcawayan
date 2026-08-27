@@ -182,6 +182,28 @@ app.post('/api/payment-webhook', (req, res) => {
 });
 
 // Manual upgrade endpoint for when you're confirming GCash payments by hand.
+// Admin: list all users so you can find who's paid and needs upgrading.
+// Protected by ADMIN_SECRET, passed as a query param from the admin page.
+app.get('/api/admin/users', (req, res) => {
+  const { adminSecret } = req.query;
+  if (!process.env.ADMIN_SECRET || adminSecret !== process.env.ADMIN_SECRET) {
+    return res.status(403).json({ error: 'Not authorized' });
+  }
+  const db = loadDb();
+  const users = Object.values(db.users)
+    .map((u) => ({
+      id: u.id,
+      referenceCode: u.id.slice(0, 8).toUpperCase(),
+      matchesUsed: u.matchesUsed,
+      limit: userLimit(u),
+      isPaid: u.isPaid,
+      reportCount: u.reportCount,
+      banned: u.banned,
+      createdAt: u.createdAt,
+    }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  res.json({ users });
+});
 // Protect this with your own secret before deploying publicly!
 app.post('/api/admin/upgrade', (req, res) => {
   const { userId, adminSecret } = req.body || {};
