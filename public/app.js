@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 // Replace with your live Render backend URL, e.g. 'https://stranger-in-pigcawayan.onrender.com'
 // Leave as '' only if frontend and backend are served from the exact same domain.
-const API_BASE = 'https://YOUR-BACKEND-NAME.onrender.com';
+const API_BASE = 'https://stranger-in-pigcawayan.onrender.com';
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   // Add your TURN server here once you set one up (see README):
