@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stranger in Pigcawayan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ambient lantern field, purely decorative -->
+<div class="lantern-field" id="lanternField" aria-hidden="true"></div>
+
+<!-- ===================== LANDING ===================== -->
+<section id="landing" class="screen landing">
+  <header class="topbar">
+    <span class="brand">Stranger <em>in</em> Pigcawayan</span>
+    <span class="online-count" id="onlineCount">the river is quiet tonight</span>
+  </header>
+
+  <div class="hero">
+    <p class="eyebrow">talk / chat</p>
+    <h1>Every stranger<br>is a lantern<br>you haven't lit yet.</h1>
+    <p class="subhead">
+      Anonymous video &amp; text chat with someone new. No profiles, no feeds — just
+      two people, a river of names you'll never learn, and a skip button if it isn't a match.
+    </p>
+
+    <div class="age-gate" id="ageGate">
+      <label for="birthYear">Enter your birth year to continue</label>
+      <div class="age-gate-row">
+        <input type="number" id="birthYear" placeholder="e.g. 2000" min="1920" max="2020" inputmode="numeric" />
+        <button id="startBtn" class="btn btn-primary">Start talking</button>
+      </div>
+      <p class="age-note">You must be 18 or older. This site is not for minors.</p>
+      <p class="error-note" id="ageError"></p>
+    </div>
+
+    <div class="status-row" id="statusRow" hidden>
+      <span id="statusText">— of — talks left</span>
+      <button id="upgradeLinkBtn" class="link-btn">upgrade for ₱<span id="priceDisplay">100</span></button>
+    </div>
+  </div>
+
+  <footer class="foot-note">
+    Be a decent stranger. Report anything that makes you unsafe — the button is always one tap away.
+  </footer>
+</section>
+
+<!-- ===================== CHAT ===================== -->
+<section id="chatScreen" class="screen chat" hidden>
+  <header class="chat-topbar">
+    <span class="brand small">Stranger <em>in</em> Pigcawayan</span>
+    <span class="room-status" id="roomStatus">looking for someone…</span>
+    <button id="endBtn" class="btn btn-ghost">End</button>
+  </header>
+
+  <div class="video-stage">
+    <video id="remoteVideo" autoplay playsinline></video>
+    <video id="localVideo" autoplay playsinline muted></video>
+    <div class="stage-overlay" id="stageOverlay">
+      <p>Casting a lantern downstream…</p>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <button id="muteBtn" class="ctrl-btn" title="Mute microphone">🎤</button>
+    <button id="camBtn" class="ctrl-btn" title="Turn off camera">📷</button>
+    <button id="skipBtn" class="ctrl-btn ctrl-btn-primary" title="Skip to next stranger">Skip ⏭</button>
+    <button id="reportBtn" class="ctrl-btn ctrl-btn-danger" title="Report this person">Report ⚑</button>
+  </div>
+
+  <div class="chat-panel">
+    <div class="chat-log" id="chatLog"></div>
+    <form id="chatForm" class="chat-form">
+      <input type="text" id="chatInput" placeholder="Say something…" autocomplete="off" />
+      <button type="submit" class="btn btn-primary btn-small">Send</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== UPGRADE MODAL ===================== -->
+<div id="upgradeModal" class="modal" hidden>
+  <div class="modal-card">
+    <button class="modal-close" id="closeUpgrade">✕</button>
+    <p class="eyebrow">membership</p>
+    <h2>You've reached your limit</h2>
+    <p id="upgradeCopy" class="modal-copy">
+      Free strangers get 5 conversations. Members get up to 50 for ₱<span id="priceDisplay2">100</span>.
+    </p>
+    <div id="paymentDetails" class="payment-details"></div>
+    <button id="payBtn" class="btn btn-primary btn-wide">Get membership — ₱<span id="priceDisplay3">100</span></button>
+  </div>
+</div>
+
+<!-- Replace YOUR-BACKEND-NAME with your live Render backend URL (same one as in app.js) -->
+<script src="https://YOUR-BACKEND-NAME.onrender.com/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
