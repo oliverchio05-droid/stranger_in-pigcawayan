@@ -1,8 +1,6 @@
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
-// Replace with your live Render backend URL, e.g. 'https://stranger-in-pigcawayan.onrender.com'
-// Leave as '' only if frontend and backend are served from the exact same domain.
 const API_BASE = 'https://stranger-in-pigcawayan.onrender.com';
 const ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -29,9 +27,6 @@ const ageGate = el('ageGate');
 const birthYearInput = el('birthYear');
 const startBtn = el('startBtn');
 const ageError = el('ageError');
-const statusRow = el('statusRow');
-const statusText = el('statusText');
-const upgradeLinkBtn = el('upgradeLinkBtn');
 
 const roomStatus = el('roomStatus');
 const remoteVideo = el('remoteVideo');
@@ -46,16 +41,11 @@ const chatLog = el('chatLog');
 const chatForm = el('chatForm');
 const chatInput = el('chatInput');
 
-const upgradeModal = el('upgradeModal');
-const closeUpgrade = el('closeUpgrade');
-const paymentDetails = el('paymentDetails');
-const payBtn = el('payBtn');
-
 // ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
 if (userId) {
-  refreshStatus();
+  ageGate.querySelector('label').textContent = 'Welcome back. Ready for another stranger?';
 }
 
 startBtn.addEventListener('click', async () => {
@@ -63,12 +53,11 @@ startBtn.addEventListener('click', async () => {
   const age = new Date().getFullYear() - year;
   ageError.textContent = '';
 
-  if (!year || age < 18 || age > 100) {
-    ageError.textContent = 'You must enter a valid birth year and be 18 or older.';
-    return;
-  }
-
   if (!userId) {
+    if (!year || age < 18 || age > 100) {
+      ageError.textContent = 'You must enter a valid birth year and be 18 or older.';
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE}/api/register`, {
         method: 'POST',
@@ -90,27 +79,6 @@ startBtn.addEventListener('click', async () => {
 
   enterChat();
 });
-
-upgradeLinkBtn.addEventListener('click', openUpgradeModal);
-closeUpgrade.addEventListener('click', () => (upgradeModal.hidden = true));
-payBtn.addEventListener('click', startPayment);
-
-async function refreshStatus() {
-  if (!userId) return;
-  try {
-    const res = await fetch(`${API_BASE}/api/status/${userId}`);
-    if (!res.ok) return;
-    const data = await res.json();
-    statusRow.hidden = false;
-    ageGate.querySelector('label').textContent = 'Welcome back.';
-    statusText.textContent = `${data.remaining} of ${data.limit} talks left${data.isPaid ? ' (member)' : ''}`;
-    el('priceDisplay').textContent = data.membershipPricePhp;
-    el('priceDisplay2').textContent = data.membershipPricePhp;
-    el('priceDisplay3').textContent = data.membershipPricePhp;
-  } catch {
-    /* ignore, non-critical */
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Enter chat flow
@@ -181,11 +149,6 @@ function connectSocket() {
   socket.on('rejoin-check', () => {
     teardownPeerConnection();
     joinQueue();
-  });
-
-  socket.on('limit-reached', (data) => {
-    setOverlay(true, "You've used all your talks for now.");
-    openUpgradeModal();
   });
 
   socket.on('banned', () => {
@@ -268,7 +231,6 @@ endBtn.addEventListener('click', () => {
   if (localStream) localStream.getTracks().forEach((t) => t.stop());
   chatScreen.hidden = true;
   landing.hidden = false;
-  refreshStatus();
 });
 
 muteBtn.addEventListener('click', () => {
@@ -310,45 +272,4 @@ function addSystemMessage(text) {
   div.textContent = text;
   chatLog.appendChild(div);
   chatLog.scrollTop = chatLog.scrollHeight;
-}
-
-// ---------------------------------------------------------------------------
-// Upgrade / payment
-// ---------------------------------------------------------------------------
-function openUpgradeModal() {
-  upgradeModal.hidden = false;
-}
-
-async function startPayment() {
-  if (!userId) return;
-  payBtn.textContent = 'Loading…';
-  try {
-    const res = await fetch(`${API_BASE}/api/create-payment`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId }),
-    });
-    const data = await res.json();
-
-    if (data.mode === 'paymongo' && data.checkoutUrl) {
-      window.location.href = data.checkoutUrl;
-      return;
-    }
-
-    if (data.mode === 'manual') {
-      paymentDetails.classList.add('show');
-      paymentDetails.innerHTML = `
-        GCash name: <strong>${data.gcashName}</strong><br>
-        GCash number: <strong>${data.gcashNumber}</strong><br>
-        Amount: <strong>₱${data.amountPhp}</strong><br>
-        Reference code: <strong>${data.referenceCode}</strong><br><br>
-        ${data.instructions}
-      `;
-      payBtn.textContent = `Get membership — ₱${data.amountPhp}`;
-      payBtn.disabled = true;
-    }
-  } catch (err) {
-    paymentDetails.classList.add('show');
-    paymentDetails.textContent = 'Could not load payment details. Try again shortly.';
-  }
 }
