@@ -62,6 +62,10 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: FRONTEND_ORIGIN, methods: ['GET', 'POST'] },
+  // Mobile networks drop and reconnect often — give connections more
+  // room before Socket.io gives up on them and drops the user from queue.
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 
 // ---------------------------------------------------------------------------
@@ -151,15 +155,21 @@ function removeFromQueue(socketId) {
 }
 
 function tryMatch() {
-  while (waitingQueue.length >= 2) {
-    const a = waitingQueue.shift();
-    const b = waitingQueue.shift();
+  let i = 0;
+  while (waitingQueue.length - i >= 2) {
+    const a = waitingQueue[i];
+    const b = waitingQueue[i + 1];
 
-    // Don't match someone with themself across duplicate tabs
+    // Don't match someone with themself across duplicate tabs.
+    // Skip past 'a' without discarding it — try pairing it with
+    // someone further down the queue on the next pass instead.
     if (a.userId === b.userId) {
-      waitingQueue.unshift(b);
+      i++;
       continue;
     }
+
+    // Found a valid pair — remove both from the queue.
+    waitingQueue.splice(i, 2);
 
     const roomId = uuidv4();
     rooms.set(roomId, { a: a.socketId, b: b.socketId });
