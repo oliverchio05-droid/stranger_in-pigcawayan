@@ -199,6 +199,29 @@ h1 {
   .scroll-hint { animation: none; }
 }
 
+.chat-scroll-hint {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--lantern-amber);
+  background: rgba(7,12,22,0.85);
+  padding: 5px 12px;
+  border-radius: 20px;
+  z-index: 5;
+  pointer-events: none;
+  animation: hint-fade 5s ease forwards;
+}
+@keyframes hint-fade {
+  0%, 65% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-scroll-hint { animation: none; opacity: 0.85; }
+}
+
 .foot-note {
   text-align: center;
   font-size: 12px;

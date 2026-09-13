@@ -99,6 +99,7 @@ startBtn.addEventListener('click', async () => {
 async function enterChat() {
   landing.hidden = true;
   chatScreen.hidden = false;
+  window.scrollTo(0, 0); // always start the chat screen from the top, regardless of scroll position on landing
 
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
