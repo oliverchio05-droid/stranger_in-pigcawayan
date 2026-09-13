@@ -120,7 +120,7 @@ function connectSocket() {
 
   socket.on('queued', () => {
     roomStatus.textContent = 'looking for someone…';
-    setOverlay(true, 'Casting a lantern downstream…');
+    setOverlay(true, 'Searching stranger…');
   });
 
   socket.on('matched', async ({ roomId, initiator }) => {
@@ -156,7 +156,7 @@ function connectSocket() {
       reason === 'reported' ? 'That conversation ended.' : 'The stranger left. Finding someone new…'
     );
     roomStatus.textContent = 'looking for someone…';
-    setOverlay(true, 'Casting a lantern downstream…');
+    setOverlay(true, 'Searching stranger…');
     joinQueue();
   });
 
@@ -237,7 +237,7 @@ skipBtn.addEventListener('click', () => {
   teardownPeerConnection(); // clear the old video frame immediately, before the overlay even shows
   addSystemMessage('You skipped. Finding someone new…');
   roomStatus.textContent = 'looking for someone…';
-  setOverlay(true, 'Casting a lantern downstream…');
+  setOverlay(true, 'Searching stranger…');
 });
 
 reportBtn.addEventListener('click', () => {
