@@ -27,6 +27,7 @@ const ageGate = el('ageGate');
 const birthYearInput = el('birthYear');
 const startBtn = el('startBtn');
 const ageError = el('ageError');
+const scrollHint = el('scrollHint');
 
 const roomStatus = el('roomStatus');
 const remoteVideo = el('remoteVideo');
@@ -47,6 +48,18 @@ const chatInput = el('chatInput');
 if (userId) {
   ageGate.querySelector('label').textContent = 'Welcome back. Ready for another stranger?';
 }
+
+// Once they've typed a full 4-digit year, nudge them toward the button —
+// on some phones the keyboard covers it, so a visual hint plus an
+// auto-scroll makes sure they don't get stuck not knowing what to do next.
+birthYearInput.addEventListener('input', () => {
+  if (birthYearInput.value.length === 4) {
+    scrollHint.hidden = false;
+    startBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    scrollHint.hidden = true;
+  }
+});
 
 startBtn.addEventListener('click', async () => {
   const year = parseInt(birthYearInput.value, 10);
@@ -156,7 +169,19 @@ function connectSocket() {
     if (socket) socket.disconnect();
   });
 
-  socket.on('error-message', (msg) => addSystemMessage(msg));
+  socket.on('error-message', (msg) => {
+    // Most common cause: the backend restarted and lost this session
+    // (its small file-based database resets on every redeploy). Rather
+    // than showing a dead end, just clear the old ID and let them rejoin.
+    addSystemMessage('Reconnecting…');
+    localStorage.removeItem('sip_user_id');
+    userId = null;
+    teardownPeerConnection();
+    if (socket) socket.disconnect();
+    chatScreen.hidden = true;
+    landing.hidden = false;
+    ageGate.querySelector('label').textContent = 'Enter your birth year to continue';
+  });
 }
 
 function joinQueue() {
