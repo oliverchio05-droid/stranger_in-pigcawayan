@@ -233,10 +233,10 @@ function teardownPeerConnection() {
 skipBtn.addEventListener('click', () => {
   if (!socket) return;
   socket.emit('skip');
+  teardownPeerConnection(); // clear the old video frame immediately, before the overlay even shows
   addSystemMessage('You skipped. Finding someone new…');
   roomStatus.textContent = 'looking for someone…';
   setOverlay(true, 'Casting a lantern downstream…');
-  teardownPeerConnection();
 });
 
 reportBtn.addEventListener('click', () => {

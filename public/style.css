@@ -101,6 +101,11 @@ button, input { font-family: inherit; }
 }
 
 /* -------------------------------------------------------------------- hero */
+.landing {
+  background: linear-gradient(180deg, rgba(7,12,22,0.55) 0%, rgba(7,12,22,0.75) 60%, rgba(7,12,22,0.95) 100%),
+              url('hero-bg.svg') center center / cover no-repeat;
+}
+
 .hero {
   flex: 1;
   display: flex;
@@ -237,6 +242,7 @@ h1 {
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--lantern-amber); color: var(--ink-navy-deep); }
 .btn-ghost { background: transparent; color: var(--moon-white-dim); border: 1px solid var(--line); }
+.btn-end { background: var(--coral); color: white; }
 .btn-wide { width: 100%; padding: 14px; font-size: 15px; }
 .btn-small { padding: 10px 16px; font-size: 13px; }
 
@@ -282,7 +288,7 @@ h1 {
 .stage-overlay {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(7,12,22,0.75);
+  background: var(--ink-navy-deep);
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--moon-white-dim);
